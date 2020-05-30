@@ -5,17 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Mission to Mars</title>
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  
+  !-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head> 
+
+
 <body class="text-white" style="background-color: black;">
     <div class="container">
+        
         <!-- Jumbotron -->
-        <!--IMAGES: https://images5.alphacoders.com/508/508358.jpg / https://vfxblog.com/wp-content/uploads/2016/12/marsattacks1b.jpg / https://i.gifer.com/embedded/download/NRfS.gif -->
-        <div class="jumbotron text-center" style="background-image: url(http://gortoncenter.org/wp-content/uploads/2018/05/The-Martian.jpg); height: 400px; background-position: center; background-size: cover;">
-            <h1 class="display-3"><b>Mission to Mars</b></h1>
+        <div class="jumbotron text-center">
+            <h1 class="display-4"><b>Mission to Mars</b></h1>
             <p><a class="btn btn-danger btn-lg" href="/scrape" role="button">Scrape New Data</a></p>
         </div>
+        
+        
         <!-- NASA Mars News -->
         <div class="container">
             <div class="row" id="mars-news">
@@ -28,6 +33,7 @@
                 </div>
             </div>
         </div>   
+        
         <!-- JPL Mars Space Images - Featured Image -->
         <div class="container">
             <div class="row" id="mars-featured-image">
@@ -36,6 +42,7 @@
                     <!-- If Images are False/None/Non-Existent, Then Default to Error Message -->
                     <img src="{{mars.featured_image | default('static/images/error.png', true) }}" class="img-responsive" style="max-width:100%; max-height: auto;" alt="Mars Featured Image"/>
                 </div>
+                
                 <!-- Mars Weather -->
                 <div class="col-lg-4 col-md-4 col-sm-12" id="mars-weather">
                     <div class="card" style="max-width: 18rem;">
@@ -55,6 +62,7 @@
                 </div>
             </div>
         </div>
+        
         <!-- Mars Hemispheres -->
         <h4 style="padding-top: 50px; margin-top: 100px; text-align: center;">Mars Hemispheres</h4>
         <div class="card-deck">

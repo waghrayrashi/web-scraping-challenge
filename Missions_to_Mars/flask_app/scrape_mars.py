@@ -1,6 +1,6 @@
 # Converted the Jupyter Notebook code into Python code
 # Dependencies and Setup
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as bs
 from splinter import Browser
 import pandas as pd
 import datetime as dt
@@ -16,11 +16,11 @@ def mars_news(browser):
     news_url = "https://mars.nasa.gov/news/"
     browser.visit(news_url)
 
-    # Get First List Item & Wait Half a Second If Not Immediately Present
+    # Get the first list item & wait half a second if not immediately present
     browser.is_element_present_by_css("ul.item_list li.slide", wait_time=0.5)
     
     news_html = browser.html
-    news_soup = BeautifulSoup(news_html, "html.parser")
+    news_soup = bs(news_html, "html.parser")
 
     # Parse Results HTML with BeautifulSoup
     # Find Everything Inside:
@@ -37,6 +37,10 @@ def mars_news(browser):
         news_paragraph = slide_element.find("div", class_="article_teaser_body").get_text()
     except AttributeError:
         return None, None
+    # Close the browser after scraping
+    browser.quit()
+    
+    # Return results
     return news_title, news_paragraph
 
 # Scrape the Featured Image from NASA JPL (Jet Propulsion Laboratory) Mars Space Images
@@ -57,15 +61,20 @@ def featured_image(browser):
 
     # Parse results HTML with BeautifulSoup
     image_html = browser.html
-    image_soup = BeautifulSoup(image_html, "html.parser")
+    image_soup = bs(image_html, "html.parser")
 
     img = image_soup.select_one("figure.lede a img")
     try:
         img_url = img.get("src")
     except AttributeError:
         return None 
-   # Use Base URL to Create Absolute URL
+    # Use Base URL to Create Absolute URL
     featured_image_url = f"https://www.jpl.nasa.gov{img_url}"
+    
+    # Close the browser after scraping
+    browser.quit()
+    
+    # Return results
     return featured_image_url
 
 # Scrape Mars Weather Twitter Account
@@ -76,7 +85,7 @@ def twitter_weather(browser):
     
     # Parse Results HTML with BeautifulSoup
     twitter_html = browser.html
-    twitter_soup = BeautifulSoup(twitter_html, "html.parser")
+    twitter_soup = bs(twitter_html, "html.parser")
     
     # Find a Tweet with the data-name `Mars Weather`
     mars_weather_tweet = twitter_soup.find("div", 
@@ -84,10 +93,14 @@ def twitter_weather(browser):
                                            "class": "tweet", 
                                             "data-name": "Mars Weather"
                                         })
-   # Search Within Tweet for <p> Tag Containing Tweet Text
+    # Search Within Tweet for <p> Tag Containing Tweet Text
     mars_weather = mars_weather_tweet.find("p", "tweet-text").get_text()
+    
+    # Close the browser after scraping
+    browser.quit()
+    
+    # Return results
     return mars_weather
-
 
 # Scrape Mars Facts
 def mars_facts():
@@ -98,7 +111,11 @@ def mars_facts():
         return None
     mars_df.columns=["Description", "Value"]
     mars_df.set_index("Description", inplace=True)
-
+    
+    # Close the browser after scraping
+    browser.quit()
+    
+    # Return results
     return mars_df.to_html(classes="table table-striped")
 
 # Scrape Mars Hemispheres 
@@ -106,34 +123,34 @@ def hemisphere(browser):
     # Visit the USGS Astrogeology Science Center Site
     hemispheres_url = "https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
     browser.visit(hemispheres_url)
-
+    # Create an empty list to store the image url's
     hemisphere_image_urls = []
 
-    # Get a List of All the Hemisphere
+    # Get a list of all the hemispheres
     links = browser.find_by_css("a.product-item h3")
     for item in range(len(links)):
         hemisphere = {}
         
-        # Find Element on Each Loop to Avoid a Stale Element Exception
+        # Find the element on each loop to avoid a stale element exception
         browser.find_by_css("a.product-item h3")[item].click()
         
-        # Find Sample Image Anchor Tag & Extract <href>
+        # Find the sample image anchor tag & extract <href>
         sample_element = browser.find_link_by_text("Sample").first
         hemisphere["img_url"] = sample_element["href"]
         
-        # Get Hemisphere Title
+        # Get hemisphere title
         hemisphere["title"] = browser.find_by_css("h2.title").text
         
-        # Append Hemisphere Object to List
+        # Append the hemisphere object to teh list of url's
         hemisphere_image_urls.append(hemisphere)
         
-        # Navigate Backwards
+        # Navigate back
         browser.back()
     return hemisphere_image_urls
 
-# Helper Function
+# Helper function
 def scrape_hemisphere(html_text):
-    hemisphere_soup = BeautifulSoup(html_text, "html.parser")
+    hemisphere_soup = bs(html_text, "html.parser")
     try: 
         title_element = hemisphere_soup.find("h2", class_="title").get_text()
         sample_element = hemisphere_soup.find("a", text="Sample").get("href")
@@ -147,7 +164,7 @@ def scrape_hemisphere(html_text):
     return hemisphere
 
 
-# Main Web Scraping Bot
+# Main scraping function
 def scrape_all():
     executable_path = {"executable_path": "./chromedriver"}
     browser = Browser("chrome", **executable_path)
